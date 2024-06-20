@@ -82,4 +82,4 @@ Será necessário explicar o porquê da escolha do modelo, como ele funciona. Ta
   - relatar dificuldades conhecidas;
   - descrever como utilizar o sistema;
 - 🔨 Disponibilizar o código fonte desenvolvido (observar estruturas de pastas);
-- O prazo de entrega é até às 14h do dia 24/06/2024 no repositório do github (https://github.com/Compass-pb-aws-2024-MAIO-A/sprints-4-5-pb-aws-maio).
+- O prazo de entrega é até às 09h do dia 15/07/2024 no repositório do github (https://github.com/Compass-pb-aws-2024-MAIO-A/sprints-4-5-pb-aws-maio).
