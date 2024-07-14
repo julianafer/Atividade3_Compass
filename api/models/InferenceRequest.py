@@ -6,7 +6,7 @@ class InferenceRequest(BaseModel):
     no_of_weekend_nights: int # Number of weekend nights (Saturday or Sunday) the guest stayed or booked to stay at the hotel
     no_of_week_nights: int # Number of week nights (Monday to Friday) the guest stayed or booked to stay at the hotel
     type_of_meal_plan: str # Type of meal plan booked by the customer
-    required_car_parking_space: int # Does the customer require a car parking space? (0 - No, 1- Yes)
+    required_car_parking_space: float # Does the customer require a car parking space? (0 - No, 1- Yes)
     room_type_reserved: str # Type of room reserved by the customer. The values are ciphered (encoded) by INN Hotels.
     lead_time: int # Number of days between the date of booking and the arrival date
     arrival_month: int # Month of arrival date
@@ -14,12 +14,6 @@ class InferenceRequest(BaseModel):
     avg_price_per_room: float # Average price per day of the reservation; prices of the rooms are dynamic. (in euros)
     no_of_special_requests: int # Total number of special requests made by the customer (e.g. high floor, view from the room, etc)
     label_avg_price_per_room: int
-
-    @validator('required_car_parking_space')
-    def validate_required_car_parking_space(cls, value: int):
-        if not (0 <= value <= 1):
-            raise ValueError('The value must be 0 or 1')
-        return value
     
     @validator('arrival_month')
     def validate_arrival_month(cls, value: int):
