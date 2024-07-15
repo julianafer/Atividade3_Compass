@@ -1,85 +1,173 @@
-# Avaliação Sprints 4 e 5 - Programa de Bolsas Compass UOL e AWS - UFES/UFLA maio/2024
+<h1 align="center" style="font-weight: bold;">Reserva Inteligente 💡</h1>
+<p align="center">
+ <a href="#tech">Tecnologias</a> • 
+  <a href="#dev">Desenvolvimento</a> • 
+ <a href="#started">Iniciando a aplicação</a> • 
+ <a href="#routes">Dificuldades</a> •
+ <a href="#colab">Colaboradores</a> 
+</p>
+<p align="center">
+    <i>O sistema Reserva Inteligente foi desenvolvido para classificar reservas de hotéis em faixas de preço de acordo com dados recebidos através da API, utilizando Machine Learning com serviços da AWS.</i>
+</p>
 
-Avaliação das quarta e quinta sprints do programa de bolsas Compass UOL para formação em machine learning para AWS.
+<h2 id="tech">💻 Tecnologias</h2>
 
-***
+- **Python** (v3.11)
+- **FastAPI** (0.111.0)
+- **Docker** (v25.0.3)
+- **AWS SageMaker**
+- **AWS RDS**
+- **AWS S3**
+- **Uvicorn** (v0.30.1)
 
-## Execução
+### Bibliotecas
+- **Boto3** (v1.34.144) 
+- **Joblib** (v1.4.2)
+- **Pandas** 
+- **Pydantic** (v1.10.17)
+- **Scikit-learn** 
+- **XGBoost** 
 
-1 - Treinar o modelo utilizando SageMaker, a partir do dataset armazenado no AWS RDS, conforme instruções a seguir, e fazer o salvamento do modelo para o S3.
+<h3> Ferramentas de Desenvolvimento </h3>
 
-2 - Criar um ambiente Docker no AWS para implementar a API descrita no próximo passo.
+- **Jupyter Notebook** (https://jupyter.org/)
+- **Git** (https://git-scm.com/) 
+- **VS Code** (https://code.visualstudio.com/)
+- **Trello** (https://trello.com/)
 
-3 - Desenvolver um serviço em python (API), utilizando algum framework http (Flask, FastApi...), que deve carregar o modelo treinado do S3 e expor um endpoint para realizar a inferência. O endpoint deve ser um POST com uma rota /api/v1/inference e receber um JSON no corpo da requisição seguindo o exemplo:
+<h2 id="dev">👩🏻‍💻  Desenvolvimento</h2>
 
-```json
-{
-    "no_of_adults": 3,
-    "no_of_children": 3,
-    "type_of_meal_plan": "example"
-    ...
-}
+### Coleta e Preparação de Dados
+
+### Dataset:
+- Utilizamos o Hotel Reservations Dataset do Kaggle.
+
+### Processamento e Limpeza:
+- Criamos uma nova coluna `label_avg_price_per_room` para classificação, com os seguintes critérios:
+  - `1` quando `avg_price_per_room` ≤ 85
+  - `2` quando `avg_price_per_room` > 85 e < 115
+  - `3` quando `avg_price_per_room` ≥ 115
+- Excluímos a coluna original `avg_price_per_room`.
+
+### Armazenamento de Dados:
+- Armazenamos o dataset original e o dataset alterado em um banco de dados AWS RDS para acesso eficiente e seguro.
+
+## Desenvolvimento do Modelo
+
+### Treinamento do Modelo:
+- Utilizamos o AWS SageMaker para treinar um modelo de Machine Learning utilizando o algoritmo XGBoost.
+- Ajustamos o modelo para atingir a melhor precisão possível.
+- Avaliamos a taxa de assertividade do modelo.
+
+### Armazenamento do Modelo:
+- O modelo treinado foi salvo em um bucket AWS S3 para fácil acesso e gerenciamento.
+
+## Implementação do Modelo
+
+### Ambiente Docker:
+- Criamos um ambiente Docker na AWS para implementar a API.
+
+### Desenvolvimento da API:
+- Desenvolvemos um serviço em Python utilizando o framework FastAPI.
+- A API carrega o modelo treinado do S3 e expõe um endpoint para realizar a inferência.
+- O endpoint é um POST com a rota `/api/v1/inference` e recebe um JSON no corpo da requisição.
+
+
+<h2 id="pastas">📂 Organização de pastas</h2>
+
+```
+api
+├── models
+│   ├── InferenceRequest.py
+│   ├── InferenceResponse.py
+│   ├── MockModel.py
+│   └── main.py
+├── assets
+│   ├── dataset_schema.png
+│   └── sprint4-5.jpg
+├── notebooks
+│   ├── pre_processing.ipynb
+│   ├── prediction.ipynb
+│   └── training.ipynb
+├── .gitignore
+└── README.md
 ```
 
-A resposta deve seguir este formato:
+<h2 id="started">🚀 Iniciando a aplicação</h2>
+Siga os passos abaixo para configurar e executar a API
 
-```json
-{
-  "result": 1
-}
+### Pré-requisitos
+Antes de começar, certifique-se de que você tem os seguintes itens instalados:
+
+- Python
+- Docker
+
+### Clonando o repositório
+```
+git clone https://github.com/Compass-pb-aws-2024-MAIO-A/sprints-4-5-pb-aws-maio.git
+```
+### Configurando as variáveis .env
+```
+AWS_ACCESS_KEY_ID=your_aws_access_key_id
+AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+RDS_DB_NAME=your_rds_db_name
+RDS_USERNAME=your_rds_username
+RDS_PASSWORD=your_rds_password
+RDS_HOSTNAME=your_rds_hostname
+RDS_PORT=your_rds_port
+```
+### Iniciando
+```
+docker build -t hotel-reservation-api .
+docker run -p 5000:5000 hotel-reservation-api
 ```
 
-4 - Realizar o Deploy do serviço na AWS.
+<h2 id="routes">⛔ Dificuldades</h2>
+Maiores dificuldades encontradas durante o desenvolvimento do projeto:
 
-![Esquema mostrando a cloud aws com usuários acessando api gateway esta recebendo o modelo do bucket s3. Sagemaker ligado ao bucket para fornecer o modelo e ao RDS para ler e atualizar o dataset.](assets/sprint4-5.jpg)
+- Persistir os dados no S3;
+- Transformar colunas categóricas em binárias;
+- Encontrar melhor maneira de treinar o modelo;
+- Melhorar a acurácia do modelo;
+- Lidar com as métricas do SageMaker.
 
-***
+<h2 id="colab">🤝 Colaboradores</h2>
+<table>
+  <tr>
+    <td align="center">
+      <a href="#">
+        <img src="assets/cayo.png" width="100px;" /><br>
+        <sub>
+          <b>Cayo Bruno</b>
+        </sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="#">
+        <img src="assets/juliana.png" width="100px;" /><br>
+        <sub>
+          <b>Juliana Ferreira</b>
+        </sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="#">
+        <img src="assets\madu.png" width="100px;" /><br>
+        <sub>
+          <b>Maria Eduarda</b>
+        </sub>
+      </a>
+    </td>
+    <td align="center">
+      <a href="#">
+        <img src="assets\olivia.png" width="100px;" /><br>
+        <sub>
+          <b>Olivia Oliva</b>
+        </sub>
+      </a>
+    </td>
+  </tr>
+</table>
 
-## Construção do Modelo
-
-O Hotel Reservations Dataset (<https://www.kaggle.com/datasets/ahsan81/hotel-reservations-classification-dataset>) é uma base de dados que trata de informações sobre reservas em hotéis.
-
-Iremos utilizar esse dataset para classificar os dados por faixa de preços de acordo com as informações encontradas em suas colunas (usem o que vocês acharem que faz sentido para análise).
-
-**Queremos saber como cada reserva (cada linha do dataset) se encaixa em qual faixa de preço.** Para isso, a equipe **deve criar uma nova coluna** chamada **label_avg_price_per_room**, que servirá como label para nossa classificação. Essa nova coluna deverá conter número 1 quando a coluna *avg_price_per_room* tiver valor menor ou igual a 85, número 2 quando a coluna *avg_price_per_room* tiver valor maior que 85 e menor que 115 e o valor 3 se a coluna *avg_price_per_room* tiver valor maior ou igual a 115.
-
-Vocês devem então **excluir a coluna avg_price_per_room** e criar um modelo que consiga classificar os dados com base na nova coluna *label_avg_price_per_room*.
-
-Armazene o dataset original e alterado no AWS RDS. O modelo treinado deverá ser armazenado no S3.
-
-Será necessário explicar o porquê da escolha do modelo, como ele funciona. Também será avaliada a taxa de assertividade do modelo.
-
-![Fluxograma para ilustração da descrição do tratamento do modelo.](assets/dataset_schema.png)
-
-***
-
-## O que será avaliado
-
-- Projeto em produção na AWS;
-- Código Python utilizado no Sagemaker;
-- Código Python usado na infererência (API);
-- Código do Dockerfile e/ou docker-compose;
-- Sobre o modelo:
-  - Divisão dos dados para treino e teste;
-  - Taxa de assertividade aceitável (se o modelo está classificando corretamente);
-  - Entendimento da equipe sobre o modelo utilizado (saber explicar o que foi feito);
-  - Mostrar resposta do modelo para classificação;
-- Organização geral do código fonte:
-  - Estrutura de pastas;
-  - Divisão de responsabilidades em arquivos/pastas distintos;
-  - Otimização do código fonte (evitar duplicações de código);
-- Objetividade do README.md.
-
-***
-
-## Entrega
-
-- **O trabalho deve ser feito em grupos de três ou quatro pessoas**;
-  - **Evitar repetições de grupos de sprints anteriores**;
-- Criar uma branch no repositório com o formato grupo-número (Exemplo: grupo-1);
-- Subir o trabalho na branch com um README.md:
-  - documentar detalhes sobre como a avaliação foi desenvolvida;
-  - relatar dificuldades conhecidas;
-  - descrever como utilizar o sistema;
-- 🔨 Disponibilizar o código fonte desenvolvido (observar estruturas de pastas);
-- O prazo de entrega é até às 09h do dia 15/07/2024 no repositório do github (https://github.com/Compass-pb-aws-2024-MAIO-A/sprints-4-5-pb-aws-maio).
+<h3 align="center">Obrigada pela leitura!</h3>
+Versão 0.0.1
