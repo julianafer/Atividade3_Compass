@@ -1,3 +1,5 @@
+
+
 class MockModel:
     def predict(self, data):
         # Simulando um resultado de inferência

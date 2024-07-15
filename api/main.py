@@ -1,24 +1,33 @@
 from fastapi import FastAPI
 
-from api.models.MockModel import MockModel
-from api.models.InferenceRequest import InferenceRequest
-from api.models.InferenceResponse import InferenceResponse
+from api.models.ModelLoader import ModelLoader
+from api.schemas.InferenceRequest import InferenceRequest
+from api.schemas.InferenceResponse import InferenceResponse
+
+import os
+from dotenv import load_dotenv
 
 app = FastAPI()
 
-# Carregar o modelo (mockado)
-model = MockModel()
+load_dotenv()
+bucket_name = os.getenv('BUCKET_NAME')
+model_key = os.getenv('MODEL_KEY')
+
+# Carregar o modelo do S3
+model_loader = ModelLoader(bucket_name, model_key)
+model_loader.load_model()
 
 @app.post("/api/v1/inference", response_model=InferenceResponse)
 async def perform_inference(request: InferenceRequest):
     # Extrair dados do request
-    data = request.dict()
+    data = [list(request.dict().values())]
 
-    # Realizar inferência (mockada)
-    result = model.predict(data)
+    # Realizar inferência
+    result = model_loader.predict(data)
 
     # Retornar resposta
-    return InferenceResponse(result=result)
+    return InferenceResponse(result=result[0])
+
 
 # comando para rodar:
 # python -m uvicorn api.main:app --reload
